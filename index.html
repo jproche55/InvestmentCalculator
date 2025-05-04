@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S&P 500 Investment Calculator</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header>
+        <div class="header-bg"></div>
+        <div class="header-content container">
+            <h1 class="app-title">S&P 500 Investment Calculator</h1>
+            <p class="app-description">See how your investments could grow over time based on historical S&P 500 performance.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Investment Parameters</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <div>
+                        <div class="form-group">
+                            <label for="initial-investment">Initial Investment</label>
+                            <div class="input-wrapper has-prefix">
+                                <span class="input-prefix">$</span>
+                                <input type="number" id="initial-investment" value="10000" min="0" step="100">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="monthly-contribution">Monthly Contribution</label>
+                            <div class="input-wrapper has-prefix">
+                                <span class="input-prefix">$</span>
+                                <input type="number" id="monthly-contribution" value="500" min="0" step="50">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="annual-return">Average Annual Return (%)</label>
+                            <div class="input-wrapper has-suffix">
+                                <input type="number" id="annual-return" value="10" min="0" max="30" step="0.1">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <small class="text-muted">S&P 500 average return is around 10% historically</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="return-variance">Return Variance (%)</label>
+                            <div class="input-wrapper has-suffix">
+                                <input type="number" id="return-variance" value="4" min="0" max="20" step="0.1">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <small class="text-muted">Simulates market volatility</small>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="investment-period">Investment Period</label>
+                            <div class="input-wrapper has-suffix">
+                                <input type="number" id="investment-period" value="20" min="1" max="50" step="1">
+                                <span class="input-suffix">yrs</span>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 2rem;">
+                            <button id="calculate-btn" class="btn-primary">Calculate Growth</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="results-card" style="display: none;">
+            <div class="card-header">
+                <h2 class="card-title">Investment Growth Results</h2>
+            </div>
+            <div class="card-body">
+                <div class="result-section">
+                    <div class="result-header">
+                        <h3 class="result-title">Summary</h3>
+                    </div>
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <div class="result-label">Final Balance</div>
+                            <div class="result-value" id="final-balance">$0</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Total Contributions</div>
+                            <div class="result-value" id="total-contributions">$0</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Total Interest Earned</div>
+                            <div class="result-value" id="total-interest">$0</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Return on Investment</div>
+                            <div class="result-value" id="roi">0%</div>
+                        </div>
+                    </div>
+
+                    <div id="chart-container"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p class="disclaimer">This calculator is for educational purposes only. Past performance is not a guarantee of future results. The S&P 500 has historically averaged around 10% annually before inflation, but individual year returns vary significantly. Always consult with a financial advisor before making investment decisions.</p>
+            <p>This Website is a Personal Project of John Roche</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src = "script.js"></script>
+</body>
+</html>
