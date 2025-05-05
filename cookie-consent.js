@@ -187,13 +187,13 @@ function loadGoogleAnalytics() {
     // Google Analytics 4 implementation
     const gaScript = document.createElement('script');
     gaScript.async = true;
-    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX'; // Replace with your GA4 ID
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-8X5PJJM9T6'; // Replace with your GA4 ID
     document.head.appendChild(gaScript);
     
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-XXXXXXXXXX'); // Replace with your GA4 ID
+    gtag('config', 'G-8X5PJJM9T6'); // Replace with your GA4 ID
 }
 
 function loadGoogleAds() {
