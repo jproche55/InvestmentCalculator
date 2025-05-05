@@ -1,211 +1,140 @@
-        // script.js
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const initialInvestmentInput = document.getElementById('initial-investment');
-            const monthlyContributionInput = document.getElementById('monthly-contribution');
-            const annualReturnInput = document.getElementById('annual-return');
-            const returnVarianceInput = document.getElementById('return-variance');
-            const investmentPeriodInput = document.getElementById('investment-period');
-            const calculateBtn = document.getElementById('calculate-btn');
-            const resultsCard = document.getElementById('results-card');
-            
-            // Results Elements
-            const finalBalanceEl = document.getElementById('final-balance');
-            const totalContributionsEl = document.getElementById('total-contributions');
-            const totalInterestEl = document.getElementById('total-interest');
-            const roiEl = document.getElementById('roi');
-            const chartContainer = document.getElementById('chart-container');
-            
-            // Chart instance
-            let investmentChart = null;
-            
-            // Function to get random return based on average and variance
-            function getRandomReturn(avgReturn, variance) {
-                // Using normal distribution approximation
-                const min = avgReturn - variance;
-                const max = avgReturn + variance;
-                return Math.random() * (max - min) + min;
-            }
-            
-            // Format currency
-            function formatCurrency(value) {
-                return new Intl.NumberFormat('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    maximumFractionDigits: 0
-                }).format(value);
-            }
-            
-            // Format percentage
-            function formatPercentage(value) {
-                return new Intl.NumberFormat('en-US', {
-                    style: 'percent',
-                    minimumFractionDigits: 1,
-                    maximumFractionDigits: 1
-                }).format(value / 100);
-            }
-            
-            // Calculate investment growth
-            function calculateInvestmentGrowth(initialInvestment, monthlyContribution, avgAnnualReturn, returnVariance, years) {
-                const monthlyRate = avgAnnualReturn / 100 / 12;
-                const totalMonths = years * 12;
-                
-                let balance = initialInvestment;
-                let totalContributions = initialInvestment;
-                const yearlyData = [{
-                    year: 0,
-                    balance: balance,
-                    contributions: totalContributions,
-                    interest: 0
-                }];
-                
-                for (let year = 1; year <= years; year++) {
-                    const yearReturn = getRandomReturn(avgAnnualReturn, returnVariance) / 100;
-                    const monthlyReturnRate = yearReturn / 12;
-                    
-                    let yearStartBalance = balance;
-                    
-                    for (let month = 1; month <= 12; month++) {
-                        // Add monthly contribution
-                        balance += monthlyContribution;
-                        totalContributions += monthlyContribution;
-                        
-                        // Apply monthly return
-                        const interestEarned = balance * monthlyReturnRate;
-                        balance += interestEarned;
-                    }
-                    
-                    yearlyData.push({
-                        year: year,
-                        balance: balance,
-                        contributions: totalContributions,
-                        interest: balance - totalContributions
-                    });
-                }
-                
-                return {
-                    finalBalance: balance,
-                    totalContributions: totalContributions,
-                    totalInterest: balance - totalContributions,
-                    roi: ((balance - totalContributions) / totalContributions) * 100,
-                    yearlyData: yearlyData
-                };
-            }
-            
-            // Create a chart to visualize investment growth
-            function createChart(data) {
-                if (investmentChart) {
-                    investmentChart.destroy();
-                }
-                
-                const ctx = document.createElement('canvas');
-                ctx.id = 'investment-chart';
-                ctx.width = 400;
-                ctx.height = 200;
-                chartContainer.innerHTML = '';
-                chartContainer.appendChild(ctx);
-                
-                const years = data.yearlyData.map(d => `Year ${d.year}`);
-                const balances = data.yearlyData.map(d => d.balance);
-                const contributions = data.yearlyData.map(d => d.contributions);
-                
-                investmentChart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: years,
-                        datasets: [
-                            {
-                                label: 'Total Balance',
-                                data: balances,
-                                borderColor: '#2563eb',
-                                backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                                tension: 0.1,
-                                fill: true
-                            },
-                            {
-                                label: 'Total Contributions',
-                                data: contributions,
-                                borderColor: '#4ade80',
-                                backgroundColor: 'rgba(74, 222, 128, 0.1)',
-                                tension: 0.1,
-                                fill: true
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.dataset.label + ': ' + formatCurrency(context.raw);
-                                    }
-                                }
-                            },
-                            legend: {
-                                position: 'top'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        if (value >= 1000000) {
-                                            return '$' + (value / 1000000).toFixed(1) + 'M';
-                                        } else if (value >= 1000) {
-                                            return '$' + (value / 1000).toFixed(1) + 'K';
-                                        }
-                                        return '$' + value;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            // Handle calculation
-            calculateBtn.addEventListener('click', function() {
-                // Get input values
-                const initialInvestment = parseFloat(initialInvestmentInput.value) || 0;
-                const monthlyContribution = parseFloat(monthlyContributionInput.value) || 0;
-                const annualReturn = parseFloat(annualReturnInput.value) || 0;
-                const returnVariance = parseFloat(returnVarianceInput.value) || 0;
-                const investmentPeriod = parseInt(investmentPeriodInput.value) || 0;
-                
-                // Validate inputs
-                if (initialInvestment < 0 || monthlyContribution < 0 || annualReturn < 0 || returnVariance < 0 || investmentPeriod <= 0) {
-                    alert('Please enter valid values.');
-                    return;
-                }
-                
-                // Calculate growth
-                const result = calculateInvestmentGrowth(
-                    initialInvestment,
-                    monthlyContribution,
-                    annualReturn,
-                    returnVariance,
-                    investmentPeriod
-                );
-                
-                // Update results
-                finalBalanceEl.textContent = formatCurrency(result.finalBalance);
-                totalContributionsEl.textContent = formatCurrency(result.totalContributions);
-                totalInterestEl.textContent = formatCurrency(result.totalInterest);
-                roiEl.textContent = formatPercentage(result.roi);
-                
-                // Show results card
-                resultsCard.style.display = 'block';
-                
-                // Create chart
-                createChart(result);
-                
-                // Scroll to results
-                resultsCard.scrollIntoView({ behavior: 'smooth' });
-            });
-            
-            // Initialize with default calculation
-            calculateBtn.click();
-        });
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Use this free S&P 500 Investment Calculator to estimate how your investments could grow over time based on historical average returns and volatility.">
+    <meta name="keywords" content="S&P 500 calculator, investment calculator, stock market returns, compound interest, financial growth calculator, ROI calculator, retirement planning">
+    <meta name="author" content="John Roche">
+    
+    <!-- Open Graph for social sharing -->
+    <meta property="og:title" content="S&P 500 Investment Calculator">
+    <meta property="og:description" content="Estimate how your investments might grow using historical S&P 500 returns.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourdomain.com/"> <!-- Replace with your domain -->
+    <meta property="og:image" content="https://yourdomain.com/preview-image.jpg"> <!-- Add an image URL -->
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="S&P 500 Investment Calculator">
+    <meta name="twitter:description" content="Explore how your investments might grow over time using historical market data.">
+    <meta name="twitter:image" content="https://yourdomain.com/preview-image.jpg">
+
+    <title>S&P 500 Investment Calculator</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Cookie Consent will load Google Analytics and Google Ads code conditionally -->
+</head>
+<body>
+    <header>
+        <div class="header-bg"></div>
+        <div class="header-content container">
+            <h1 class="app-title">S&P 500 Investment Calculator</h1>
+            <p class="app-description">See how your investments could grow over time based on historical S&P 500 performance.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Investment Parameters</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-grid">
+                    <div>
+                        <div class="form-group">
+                            <label for="initial-investment">Initial Investment</label>
+                            <div class="input-wrapper has-prefix">
+                                <span class="input-prefix">$</span>
+                                <input type="number" id="initial-investment" value="10000" min="0" step="100">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="monthly-contribution">Monthly Contribution</label>
+                            <div class="input-wrapper has-prefix">
+                                <span class="input-prefix">$</span>
+                                <input type="number" id="monthly-contribution" value="500" min="0" step="50">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="annual-return">Average Annual Return (%)</label>
+                            <div class="input-wrapper has-suffix">
+                                <input type="number" id="annual-return" value="10" min="0" max="30" step="0.1">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <small class="text-muted">S&P 500 average return is around 10% historically</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="return-variance">Return Variance (%)</label>
+                            <div class="input-wrapper has-suffix">
+                                <input type="number" id="return-variance" value="4" min="0" max="20" step="0.1">
+                                <span class="input-suffix">%</span>
+                            </div>
+                            <small class="text-muted">Simulates market volatility</small>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="investment-period">Investment Period</label>
+                            <div class="input-wrapper has-suffix">
+                                <input type="number" id="investment-period" value="20" min="1" max="50" step="1">
+                                <span class="input-suffix">yrs</span>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-top: 2rem;">
+                            <button id="calculate-btn" class="btn-primary">Calculate Growth</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="results-card" style="display: none;">
+            <div class="card-header">
+                <h2 class="card-title">Investment Growth Results</h2>
+            </div>
+            <div class="card-body">
+                <div class="result-section">
+                    <div class="result-header">
+                        <h3 class="result-title">Summary</h3>
+                    </div>
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <div class="result-label">Final Balance</div>
+                            <div class="result-value" id="final-balance">$0</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Total Contributions</div>
+                            <div class="result-value" id="total-contributions">$0</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Total Interest Earned</div>
+                            <div class="result-value" id="total-interest">$0</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-label">Return on Investment</div>
+                            <div class="result-value" id="roi">0%</div>
+                        </div>
+                    </div>
+
+                    <div id="chart-container"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p class="disclaimer">This calculator is for educational purposes only. Past performance is not a guarantee of future results. The S&P 500 has historically averaged around 10% annually before inflation, but individual year returns vary significantly. Always consult with a financial advisor before making investment decisions.</p>
+            <p>This Website is a Personal Project of John Roche | <a href="privacy-policy.html">Privacy Policy</a> | <a href="#" onclick="openCookiePreferences(); return false;">Cookie Settings</a></p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="script.js"></script>
+    <script src="cookie-consent.js"></script>
+</body>
+</html>
