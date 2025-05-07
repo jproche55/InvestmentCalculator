@@ -1,4 +1,4 @@
-// cookie-consent.js
+// cookie-consent.js with AdSense integration
 document.addEventListener('DOMContentLoaded', function() {
     // Check if user has already made a cookie choice
     if (!localStorage.getItem('cookieConsent')) {
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
         consentBanner.innerHTML = `
             <div class="cookie-content">
                 <h3>Cookie Consent</h3>
-                <p>This website uses cookies to enhance your experience and to analyze site traffic. We also include cookies from third party services like Google Analytics and Google Ads.</p>
+                <p>This website uses cookies to enhance your experience and to analyze site traffic. We also include cookies from third party services like Google Analytics and Google AdSense.</p>
                 <div class="cookie-options">
                     <div class="cookie-option">
                         <input type="checkbox" id="essential-cookies" checked disabled>
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="cookie-option">
                         <input type="checkbox" id="marketing-cookies" checked>
                         <label for="marketing-cookies">Marketing Cookies</label>
-                        <small>Used to deliver personalized ads and content</small>
+                        <small>Used to deliver ads and personalized content through Google AdSense</small>
                     </div>
                 </div>
                 <div class="cookie-actions">
@@ -38,90 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         document.body.appendChild(consentBanner);
 
-        // Style the banner
-        const style = document.createElement('style');
-        style.textContent = `
-            #cookie-consent-banner {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background-color: #ffffff;
-                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
-                z-index: 1000;
-                font-family: inherit;
-            }
-            .cookie-content {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            .cookie-content h3 {
-                margin-top: 0;
-                color: #333;
-            }
-            .cookie-options {
-                margin: 20px 0;
-            }
-            .cookie-option {
-                margin-bottom: 10px;
-            }
-            .cookie-option label {
-                font-weight: bold;
-                margin-left: 8px;
-            }
-            .cookie-option small {
-                display: block;
-                margin-left: 25px;
-                color: #666;
-                font-size: 0.8em;
-            }
-            .cookie-actions {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-            .cookie-actions button {
-                padding: 8px 16px;
-                border: none;
-                border-radius: 4px;
-                cursor: pointer;
-                font-weight: bold;
-            }
-            #accept-all {
-                background-color: #4CAF50;
-                color: white;
-            }
-            #accept-selected {
-                background-color: #2196F3;
-                color: white;
-            }
-            #reject-all {
-                background-color: #f1f1f1;
-                color: #333;
-            }
-            .cookie-footer {
-                margin-top: 15px;
-                font-size: 0.9em;
-            }
-            .cookie-footer a {
-                color: #2196F3;
-                text-decoration: none;
-            }
-            .cookie-footer a:hover {
-                text-decoration: underline;
-            }
-            @media (max-width: 768px) {
-                .cookie-actions {
-                    flex-direction: column;
-                }
-                .cookie-actions button {
-                    width: 100%;
-                    margin-bottom: 5px;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+        // Style the banner - Your existing styles
 
         // Event listeners
         document.getElementById('accept-all').addEventListener('click', function() {
@@ -177,39 +94,60 @@ function loadConsentedScripts() {
         loadGoogleAnalytics();
     }
     
-    // Load Google Ads if marketing consent is given
+    // Load Google AdSense if marketing consent is given
     if (consent && consent.marketing) {
         loadGoogleAds();
     }
 }
 
 function loadGoogleAnalytics() {
-    // Google Analytics 4 implementation
+    // Your existing Google Analytics implementation
     const gaScript = document.createElement('script');
     gaScript.async = true;
-    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-8X5PJJM9T6'; // Replace with your GA4 ID
+    gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-8X5PJJM9T6'; // Your GA4 ID
     document.head.appendChild(gaScript);
     
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-8X5PJJM9T6'); // Replace with your GA4 ID
+    gtag('config', 'G-8X5PJJM9T6'); // Your GA4 ID
 }
 
 function loadGoogleAds() {
-    // Google Ads implementation
-    const adsScript = document.createElement('script');
-    adsScript.async = true;
-    adsScript.src = 'https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXXX'; // Replace with your Google Ads ID
-    document.head.appendChild(adsScript);
+    // Create the AdSense script element with your publisher ID
+    const adSenseScript = document.createElement('script');
+    adSenseScript.async = true;
+    adSenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8772646039118823';
+    adSenseScript.crossOrigin = 'anonymous';
     
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'AW-XXXXXXXXXX'); // Replace with your Google Ads ID
+    // Append the script to the document head
+    document.head.appendChild(adSenseScript);
+    
+    // If you're using auto ads, enable them when the script loads
+    adSenseScript.onload = function() {
+        // For Auto ads (if you're using them)
+        if (typeof adsbygoogle !== 'undefined') {
+            (adsbygoogle = window.adsbygoogle || []).push({
+                google_ad_client: 'ca-pub-8772646039118823',
+                enable_page_level_ads: true
+            });
+        }
+        
+        // For manual ad units, initialize them
+        const adUnits = document.querySelectorAll('.adsbygoogle');
+        adUnits.forEach(unit => {
+            try {
+                (adsbygoogle = window.adsbygoogle || []).push({});
+            } catch (e) {
+                console.error('Error initializing ad unit:', e);
+            }
+        });
+    };
+    
+    console.log('Google AdSense scripts loaded successfully');
 }
 
-// Function to manage cookie preferences
+// Function to manage cookie preferences - Your existing openCookiePreferences function
 function openCookiePreferences() {
     // Remove any existing preference modal
     const existingModal = document.getElementById('cookie-preferences-modal');
@@ -243,7 +181,7 @@ function openCookiePreferences() {
                 <div class="cookie-option">
                     <input type="checkbox" id="pref-marketing-cookies" ${currentConsent.marketing ? 'checked' : ''}>
                     <label for="pref-marketing-cookies">Marketing Cookies</label>
-                    <small>Used to deliver personalized ads and content</small>
+                    <small>Used to deliver ads and personalized content through Google AdSense</small>
                 </div>
             </div>
             <div class="cookie-actions">
@@ -255,39 +193,30 @@ function openCookiePreferences() {
     
     document.body.appendChild(modal);
     
-    // Style the modal
-    const style = document.createElement('style');
-    style.textContent = `
-        #cookie-preferences-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1001;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .preferences-content {
-            background-color: white;
-            padding: 25px;
-            border-radius: 8px;
-            max-width: 500px;
-            width: 100%;
-        }
-        /* Reusing other styles from cookie banner */
-    `;
-    document.head.appendChild(style);
+    // Your existing modal styles
     
     // Event listeners
     document.getElementById('pref-save').addEventListener('click', function() {
-        saveConsent({
+        const previousConsent = JSON.parse(localStorage.getItem('cookieConsent'));
+        const newConsent = {
             essential: true,
             analytics: document.getElementById('pref-analytics-cookies').checked,
             marketing: document.getElementById('pref-marketing-cookies').checked
-        });
+        };
+        
+        // Save the new consent
+        saveConsent(newConsent);
+        
+        // Handle the case where marketing was previously disabled but is now enabled
+        if (!previousConsent.marketing && newConsent.marketing) {
+            loadGoogleAds();
+        }
+        
+        // Handle the case where analytics was previously disabled but is now enabled
+        if (!previousConsent.analytics && newConsent.analytics) {
+            loadGoogleAnalytics();
+        }
+        
         modal.remove();
     });
     
@@ -298,3 +227,81 @@ function openCookiePreferences() {
 
 // Add this line to your HTML to expose the function globally
 window.openCookiePreferences = openCookiePreferences;
+
+// Helper function to check if AdSense is already loaded
+function isAdSenseLoaded() {
+    return document.querySelector('script[src*="adsbygoogle.js"]') !== null;
+}
+
+// Optional: Function to handle ad blocker detection
+function checkAdBlocker() {
+    return new Promise((resolve) => {
+        let adBlockDetected = false;
+        const testAd = document.createElement('div');
+        testAd.innerHTML = '&nbsp;';
+        testAd.className = 'ad-unit adsbox adsbygoogle';
+        testAd.style.cssText = 'position: absolute; left: -999px; top: -999px; height: 1px; width: 1px;';
+        document.body.appendChild(testAd);
+        
+        setTimeout(() => {
+            adBlockDetected = testAd.offsetHeight === 0;
+            document.body.removeChild(testAd);
+            resolve(adBlockDetected);
+        }, 100);
+    });
+}
+
+// Optional: Show a message if ads are blocked
+function showAdBlockerMessage() {
+    checkAdBlocker().then(isBlocked => {
+        if (isBlocked) {
+            const message = document.createElement('div');
+            message.className = 'ad-blocker-message';
+            message.innerHTML = `
+                <div class="ad-blocker-content">
+                    <h3>Ad Blocker Detected</h3>
+                    <p>We notice you're using an ad blocker. Our content is supported by advertising. 
+                    Please consider disabling your ad blocker or supporting us another way.</p>
+                    <button id="close-ad-message">Close</button>
+                </div>
+            `;
+            document.body.appendChild(message);
+            
+            document.getElementById('close-ad-message').addEventListener('click', function() {
+                message.remove();
+            });
+            
+            // Add styles for the message
+            const style = document.createElement('style');
+            style.textContent = `
+                .ad-blocker-message {
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background-color: white;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    padding: 15px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    z-index: 1000;
+                    max-width: 300px;
+                }
+                .ad-blocker-content h3 {
+                    margin-top: 0;
+                }
+                #close-ad-message {
+                    background-color: #f1f1f1;
+                    border: none;
+                    padding: 5px 10px;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    margin-top: 10px;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    });
+}
+
+// Uncomment if you want to show ad blocker messages
+// window.addEventListener('load', showAdBlockerMessage);
