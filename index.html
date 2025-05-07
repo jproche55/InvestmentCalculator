@@ -29,28 +29,93 @@
 
     <!-- Structured Data / Schema Markup -->
     <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FinancialProduct",
+  "name": "S&P 500 Investment Calculator",
+  "description": "Calculate potential returns on your investments with our free S&P 500 Investment Calculator based on historical market data.",
+  "url": "https://invest-o-calc.netlify.app/",
+  "provider": {
+    "@type": "Person",
+    "name": "John Roche",
+    "email": "jp.roche.web@gmail.com"
+  },
+  "category": "Investment Tool",
+  "featureList": [
+    "Historical S&P 500 returns",
+    "Compound interest calculations",
+    "Monthly contribution options",
+    "Market volatility simulations"
+  ],
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<!-- Additional FAQ Schema -->
+<script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "FinancialProduct",
-      "name": "S&P 500 Investment Calculator",
-      "description": "Calculate potential returns on your investments with our free S&P 500 Investment Calculator based on historical market data.",
-      "url": "https://yourdomain.com/sp500-investment-calculator/",
-      "provider": {
-        "@type": "Person",
-        "name": "John Roche"
-      },
-      "category": "Investment Tool",
-      "featureList": [
-        "Historical S&P 500 returns",
-        "Compound interest calculations",
-        "Monthly contribution options",
-        "Market volatility simulations"
-      ],
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the S&P 500?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The S&P 500 (Standard & Poor's 500) is a stock market index tracking the performance of 500 large companies listed on stock exchanges in the United States. It is widely considered one of the best gauges of large-cap U.S. equities."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What has been the historical return of the S&P 500?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Historically, the S&P 500 has returned about 10% annually on average before inflation. After accounting for inflation, the average annual return is closer to 7%."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I invest in the S&P 500?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The most common way to invest in the S&P 500 is through index funds or ETFs (Exchange-Traded Funds) that track the performance of the S&P 500. Popular options include funds offered by Vanguard, Fidelity, and Charles Schwab."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is compound interest important for investment growth?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Compound interest allows your investments to grow exponentially over time as you earn returns not just on your initial investment, but also on the accumulated interest. This calculator demonstrates how powerful compounding can be, especially over longer time periods."
+          }
+        }
+      ]
+    }
+    </script>
+    
+    <!-- BreadcrumbList Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://invest-o-calc.netlify.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "S&P 500 Investment Calculator",
+          "item": "https://invest-o-calc.netlify.app/"
+        }
+      ]
     }
     </script>
 
@@ -162,27 +227,59 @@
         </div>
         
         <!-- FAQ Section for SEO -->
-        <section class="card faq-section">
+        <section class="card faq-section" id="faqs">
             <div class="card-header">
                 <h2 class="card-title">Frequently Asked Questions About S&P 500 Investing</h2>
             </div>
             <div class="card-body">
-                <div class="faq-item">
-                    <h3 class="faq-question">What is the S&P 500?</h3>
-                    <p class="faq-answer">The S&P 500 (Standard & Poor's 500) is a stock market index tracking the performance of 500 large companies listed on stock exchanges in the United States. It is widely considered one of the best gauges of large-cap U.S. equities.</p><br>
-                </div>
-                <div class="faq-item">
-                    <h3 class="faq-question">What has been the historical return of the S&P 500?</h3>
-                    <p class="faq-answer">Historically, the S&P 500 has returned about 10% annually on average before inflation. After accounting for inflation, the average annual return is closer to 7%.</p><br>
-                </div>
-                <div class="faq-item">
-                    <h3 class="faq-question">How can I invest in the S&P 500?</h3>
-                    <p class="faq-answer">The most common way to invest in the S&P 500 is through index funds or ETFs (Exchange-Traded Funds) that track the performance of the S&P 500. Popular options include funds offered by Vanguard, Fidelity, and Charles Schwab.</p><br>
-                </div>
-                <div class="faq-item">
-                    <h3 class="faq-question">Why is compound interest important for investment growth?</h3>
-                    <p class="faq-answer">Compound interest allows your investments to grow exponentially over time as you earn returns not just on your initial investment, but also on the accumulated interest. This calculator demonstrates how powerful compounding can be, especially over longer time periods.</p>
-                </div>
+                <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">What is the S&P 500?</h3>
+                    <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+                        <p class="faq-answer" itemprop="text">The S&P 500 (Standard & Poor's 500) is a stock market index tracking the performance of 500 large companies listed on stock exchanges in the United States. It is widely considered one of the best gauges of large-cap U.S. equities.</p>
+                    </div>
+                </article>
+                
+                <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">What has been the historical return of the S&P 500?</h3>
+                    <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+                        <p class="faq-answer" itemprop="text">Historically, the S&P 500 has returned about 10% annually on average before inflation. After accounting for inflation, the average annual return is closer to 7%. However, it's important to note that returns can vary significantly from year to year, with some years seeing negative returns and others seeing returns well above the average.</p>
+                    </div>
+                </article>
+                
+                <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">How can I invest in the S&P 500?</h3>
+                    <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+                        <p class="faq-answer" itemprop="text">The most common way to invest in the S&P 500 is through index funds or ETFs (Exchange-Traded Funds) that track the performance of the S&P 500. Popular options include funds offered by Vanguard (VOO), Fidelity (FXAIX), and Charles Schwab (SWPPX). These funds allow you to gain exposure to all 500 companies with a single investment.</p>
+                    </div>
+                </article>
+                
+                <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">Why is compound interest important for investment growth?</h3>
+                    <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+                        <p class="faq-answer" itemprop="text">Compound interest allows your investments to grow exponentially over time as you earn returns not just on your initial investment, but also on the accumulated interest. This calculator demonstrates how powerful compounding can be, especially over longer time periods. Einstein reportedly called compound interest "the eighth wonder of the world."</p>
+                    </div>
+                </article>
+                
+                <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">How much should I invest in the S&P 500?</h3>
+                    <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+                        <p class="faq-answer" itemprop="text">The amount you should invest depends on your financial situation, goals, and risk tolerance. Many financial advisors recommend investing 10-15% of your income for retirement. This calculator can help you see how different investment amounts might grow over time, but it's always best to consult with a financial advisor for personalized advice.</p>
+                    </div>
+                </article>
+                
+                <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">What factors affect S&P 500 returns?</h3>
+                    <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+                        <p class="faq-answer" itemprop="text">S&P 500 returns are influenced by numerous factors including economic conditions, corporate earnings, interest rates, inflation, government policies, global events, and investor sentiment. The variance feature in our calculator helps simulate the natural fluctuations you might experience when investing in the market.</p>
+                    </div>
+                </article>
+                
+                <article class="faq-item" itemscope itemtype="https://schema.org/Question">
+                    <h3 class="faq-question" itemprop="name">Is the S&P 500 a good long-term investment?</h3>
+                    <div itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">
+                        <p class="faq-answer" itemprop="text">Historically, the S&P 500 has proven to be an excellent long-term investment, consistently outperforming many other asset classes over periods of 10+ years. While past performance doesn't guarantee future results, the S&P 500's diversification across 500 leading U.S. companies provides exposure to the growth of the American economy, making it a cornerstone of many long-term investment strategies.</p>
+                    </div>
+                </article>
             </div>
         </section>
         
