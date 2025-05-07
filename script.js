@@ -74,11 +74,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }).format(value / 100);
     }
     
-    // Calculate investment growth
+    // Calculate investment growth with maximum and minimum scenarios
     function calculateInvestmentGrowth(initialInvestment, monthlyContribution, avgAnnualReturn, returnVariance, years) {
-        const monthlyRate = avgAnnualReturn / 100 / 12;
-        const totalMonths = years * 12;
-        
+        // Calculate base scenario
         let balance = initialInvestment;
         let totalContributions = initialInvestment;
         const yearlyData = [{
@@ -88,20 +86,53 @@ document.addEventListener('DOMContentLoaded', function() {
             interest: 0
         }];
         
+        // Calculate optimistic scenario (average return + variance)
+        let maxBalance = initialInvestment;
+        let maxTotalContributions = initialInvestment;
+        const maxYearlyData = [{
+            year: 0,
+            balance: maxBalance,
+            contributions: maxTotalContributions
+        }];
+        
+        // Calculate pessimistic scenario (average return - variance)
+        let minBalance = initialInvestment;
+        let minTotalContributions = initialInvestment;
+        const minYearlyData = [{
+            year: 0,
+            balance: minBalance,
+            contributions: minTotalContributions
+        }];
+        
         for (let year = 1; year <= years; year++) {
+            // Base scenario with random fluctuation
             const yearReturn = getRandomReturn(avgAnnualReturn, returnVariance) / 100;
             const monthlyReturnRate = yearReturn / 12;
             
-            let yearStartBalance = balance;
+            // Max scenario - use the average return plus variance
+            const maxYearReturn = (avgAnnualReturn + returnVariance) / 100;
+            const maxMonthlyReturnRate = maxYearReturn / 12;
+            
+            // Min scenario - use the average return minus variance
+            // Make sure we don't go below 0% return
+            const minYearReturn = Math.max((avgAnnualReturn - returnVariance), 0) / 100;
+            const minMonthlyReturnRate = minYearReturn / 12;
             
             for (let month = 1; month <= 12; month++) {
-                // Add monthly contribution
+                // Base scenario
                 balance += monthlyContribution;
                 totalContributions += monthlyContribution;
+                balance += balance * monthlyReturnRate;
                 
-                // Apply monthly return
-                const interestEarned = balance * monthlyReturnRate;
-                balance += interestEarned;
+                // Max scenario
+                maxBalance += monthlyContribution;
+                maxTotalContributions += monthlyContribution;
+                maxBalance += maxBalance * maxMonthlyReturnRate;
+                
+                // Min scenario
+                minBalance += monthlyContribution;
+                minTotalContributions += monthlyContribution;
+                minBalance += minBalance * minMonthlyReturnRate;
             }
             
             yearlyData.push({
@@ -110,6 +141,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 contributions: totalContributions,
                 interest: balance - totalContributions
             });
+            
+            maxYearlyData.push({
+                year: year,
+                balance: maxBalance,
+                contributions: maxTotalContributions
+            });
+            
+            minYearlyData.push({
+                year: year,
+                balance: minBalance,
+                contributions: minTotalContributions
+            });
         }
         
         return {
@@ -117,7 +160,11 @@ document.addEventListener('DOMContentLoaded', function() {
             totalContributions: totalContributions,
             totalInterest: balance - totalContributions,
             roi: ((balance - totalContributions) / totalContributions) * 100,
-            yearlyData: yearlyData
+            yearlyData: yearlyData,
+            maxYearlyData: maxYearlyData,
+            minYearlyData: minYearlyData,
+            maxFinalBalance: maxBalance,
+            minFinalBalance: minBalance
         };
     }
     
@@ -132,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.width = 400;
         ctx.height = 200;
         // Add alt text for better accessibility and SEO
-        ctx.setAttribute('aria-label', 'Investment growth chart showing balance and contributions over time');
+        ctx.setAttribute('aria-label', 'Investment growth chart showing balance, maximum potential, and minimum potential over time');
         
         chartContainer.innerHTML = '';
         chartContainer.appendChild(ctx);
@@ -140,7 +187,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const years = data.yearlyData.map(d => `Year ${d.year}`);
         const balances = data.yearlyData.map(d => d.balance);
         const contributions = data.yearlyData.map(d => d.contributions);
-        const interest = data.yearlyData.map(d => d.interest);
+        const maxBalances = data.maxYearlyData.map(d => d.balance);
+        const minBalances = data.minYearlyData.map(d => d.balance);
         
         investmentChart = new Chart(ctx, {
             type: 'line',
@@ -153,7 +201,25 @@ document.addEventListener('DOMContentLoaded', function() {
                         borderColor: '#2563eb',
                         backgroundColor: 'rgba(37, 99, 235, 0.1)',
                         tension: 0.1,
-                        fill: true
+                        fill: false
+                    },
+                    {
+                        label: 'Maximum Potential',
+                        data: maxBalances,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderDash: [5, 5],
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'Minimum Potential',
+                        data: minBalances,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        borderDash: [5, 5],
+                        tension: 0.1,
+                        fill: false
                     },
                     {
                         label: 'Total Contributions',
@@ -162,15 +228,6 @@ document.addEventListener('DOMContentLoaded', function() {
                         backgroundColor: 'rgba(74, 222, 128, 0.1)',
                         tension: 0.1,
                         fill: true
-                    },
-                    {
-                        label: 'Interest Earned',
-                        data: interest,
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                        tension: 0.1,
-                        fill: true,
-                        hidden: true // Hidden by default, user can toggle
                     }
                 ]
             },
@@ -312,6 +369,41 @@ document.addEventListener('DOMContentLoaded', function() {
             totalInterestEl.textContent = formatCurrency(result.totalInterest);
             roiEl.textContent = formatPercentage(result.roi);
             
+            // Add elements to display max and min potential
+            const resultGrid = document.querySelector('.results-grid');
+            
+            // Check if max/min elements already exist and remove them if they do
+            const existingMaxMin = document.getElementById('max-min-container');
+            if (existingMaxMin) {
+                existingMaxMin.remove();
+            }
+            
+            // Create max/min container
+            const maxMinContainer = document.createElement('div');
+            maxMinContainer.id = 'max-min-container';
+            maxMinContainer.className = 'result-section';
+            maxMinContainer.style.marginTop = '2rem';
+            
+            // Create max/min content
+            maxMinContainer.innerHTML = `
+                <div class="result-header">
+                    <h3 class="result-title">Potential Range (Based on ${returnVariance}% Variance)</h3>
+                </div>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-label">Maximum Potential</div>
+                        <div class="result-value" style="color: #10b981;">${formatCurrency(result.maxFinalBalance)}</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Minimum Potential</div>
+                        <div class="result-value" style="color: #ef4444;">${formatCurrency(result.minFinalBalance)}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Append max/min container after the chart container
+            document.querySelector('#chart-container').parentNode.appendChild(maxMinContainer);
+            
             // Save form state
             saveFormState();
             
@@ -377,8 +469,4 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add structured data
     addStructuredData();
-    
-    // DO NOT auto-click the calculate button on page load
-    // The line below was removed to fix the auto-scrolling issue
-    // calculateBtn.click();
 });
